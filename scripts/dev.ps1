@@ -60,7 +60,7 @@ switch ($Action) {
             Remove-Item $PIDFile -ErrorAction SilentlyContinue
             Write-Output "Stopped server (PID $pid)"
         } catch {
-            Write-Error "Failed to stop PID $pid: $_"
+            Write-Error ("Failed to stop PID {0}: {1}" -f $pid, $_)
         }
     }
     'status' {
