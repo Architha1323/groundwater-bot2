@@ -35,7 +35,7 @@ function Save-Pid($p) {
 switch ($Action) {
     'start' {
         $existing = Get-RunningPid
-        if ($existing) { Write-Output "Server already running (PID $existing). Use `stop` to stop it.`"; break }
+        if ($existing) { Write-Output "Server already running (PID $existing). Use 'stop' to stop it."; break }
 
         # prefer local nodemon if available
         $nodemonPath = Join-Path $PSScriptRoot '..\node_modules\.bin\nodemon.cmd'
