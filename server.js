@@ -13,7 +13,40 @@ const rateMap = new Map();
 const RATE_LIMIT_MAX = 10; // requests
 const RATE_LIMIT_WINDOW = 10 * 1000; // ms
 
-app.post('/api/message', (req, res) => {
+
+
+// Health endpoint
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+const db = require('./db');
+// ai module will be required inside route to allow test mocks to take effect
+
+// History endpoints
+app.get('/api/history', (req, res) => {
+  try {
+    const history = db.getHistory(200);
+    res.json({ history });
+  } catch (err) {
+    console.error('Error in /api/history', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/api/history', (req, res) => {
+  try {
+    // optional safety: require env var to allow clears in production
+    if (process.env.ALLOW_CLEAR_HISTORY !== 'true') {
+      return res.status(403).json({ error: 'Clearing history is disabled' });
+    }
+    clearHistory();
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error clearing history', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/message', async (req, res) => {
   try {
     const ip = req.ip || req.connection.remoteAddress;
     const now = Date.now();
@@ -29,22 +62,27 @@ app.post('/api/message', (req, res) => {
     }
 
     const { message } = req.body;
-    if (!message || typeof message !== 'string')
-      return res.status(400).json({ error: 'No message provided' });
+    if (!message || typeof message !== 'string') return res.status(400).json({ error: 'No message provided' });
     if (message.length > 1000) return res.status(400).json({ error: 'Message too long' });
 
-    // Simple canned response (replace with real AI integration later)
     const sanitized = message.replace(/\s+/g, ' ').trim();
-    const reply = `Hi, I'm ${BOT_NAME}. You said: "${sanitized}". I can help with groundwater topics like aquifers, recharge, and contamination.`;
+
+    // Save user message first (ensures persistence even if AI fails)
+    db.saveMessage('user', sanitized);
+
+    // Require AI module here so tests can mock it after the server module has been loaded
+    const { getAIReply } = require('./ai');
+    const reply = await getAIReply(sanitized);
+
+    // save the reply
+    db.saveMessage('bot', reply);
+
     res.json({ reply });
   } catch (err) {
     console.error('Error in /api/message', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-// Health endpoint
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 const PORT = process.env.PORT || 3000;
 if (require.main === module) {
