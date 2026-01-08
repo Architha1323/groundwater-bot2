@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, 'upgrade/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start server
+        run: |
+          node server.js &
+          sleep 1
+
+      - name: Check homepage
+        run: |
+          curl -fsS http://localhost:3000
+
+      - name: Check API response
+        run: |
+          curl -s -X POST -H "Content-Type: application/json" -d '{"message":"CI smoke test"}' http://localhost:3000 | grep -q "GroundwaterBot"
