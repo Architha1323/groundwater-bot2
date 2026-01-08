@@ -6,8 +6,6 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const BOT_NAME = process.env.BOT_NAME || 'GroundwaterBot';
-
 // Basic in-memory rate limiter (per IP)
 const rateMap = new Map();
 const RATE_LIMIT_MAX = 10; // requests
@@ -36,7 +34,7 @@ app.delete('/api/history', (req, res) => {
     if (process.env.ALLOW_CLEAR_HISTORY !== 'true') {
       return res.status(403).json({ error: 'Clearing history is disabled' });
     }
-    clearHistory();
+    db.clearHistory();
     res.json({ ok: true });
   } catch (err) {
     console.error('Error clearing history', err);

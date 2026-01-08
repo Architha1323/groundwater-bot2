@@ -1,6 +1,4 @@
 const request = require('supertest');
-const fs = require('fs');
-const path = require('path');
 
 // Use a temp DB file for tests
 process.env.DB_FILE = ':memory:';
