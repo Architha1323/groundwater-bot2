@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, 'upgrade/**' ]
+    branches: [main, 'upgrade/**']
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   smoke:
