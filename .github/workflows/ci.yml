@@ -24,7 +24,14 @@ jobs:
       - name: Start server
         run: |
           node server.js &
-          sleep 1
+          # wait for health endpoint (up to 15s)
+          for i in $(seq 1 15); do
+            if curl -fsS http://localhost:3000/health >/dev/null 2>&1; then
+              echo "Server ready"
+              break
+            fi
+            sleep 1
+          done
 
       - name: Check homepage
         run: |
@@ -32,4 +39,12 @@ jobs:
 
       - name: Check API response
         run: |
-          curl -s -X POST -H "Content-Type: application/json" -d '{"message":"CI smoke test"}' http://localhost:3000 | grep -q "GroundwaterBot"
+          # retry a few times in case server still warming up
+          for i in $(seq 1 5); do
+            if curl -s -X POST -H "Content-Type: application/json" -d '{"message":"CI smoke test"}' http://localhost:3000 | grep -q "GroundwaterBot"; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "API did not respond as expected" >&2
+          exit 1
