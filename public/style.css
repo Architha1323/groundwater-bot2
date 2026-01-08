@@ -33,14 +33,21 @@ h1 {
 .message {
   margin: 6px 0;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 12px;
+  max-width: 78%;
+  word-wrap: break-word;
 }
 .user {
-  background: #e6f7ff;
+  background: linear-gradient(90deg, #e6f7ff, #d9f0ff);
   text-align: right;
+  margin-left: auto;
 }
 .bot {
-  background: #f0f0f0;
+  background: #f8f8fb;
+}
+.bot.typing {
+  opacity: 0.7;
+  font-style: italic;
 }
 
 .form {

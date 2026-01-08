@@ -8,6 +8,12 @@ describe('API', () => {
     expect(res.type).toMatch(/html/);
   });
 
+  test('GET /health returns ok', async () => {
+    const res = await request(app).get('/health');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ status: 'ok' });
+  });
+
   test('POST /api/message returns reply', async () => {
     const res = await request(app).post('/api/message').send({ message: 'Hello' });
     expect(res.statusCode).toBe(200);
@@ -17,6 +23,12 @@ describe('API', () => {
 
   test('POST /api/message without message returns 400', async () => {
     const res = await request(app).post('/api/message').send({});
+    expect(res.statusCode).toBe(400);
+  });
+
+  test('POST /api/message with long message returns 400', async () => {
+    const long = 'a'.repeat(2000);
+    const res = await request(app).post('/api/message').send({ message: long });
     expect(res.statusCode).toBe(400);
   });
 });
