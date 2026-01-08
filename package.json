@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "dev:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\dev.ps1 start",
+    "dev:win:stop": "powershell -ExecutionPolicy Bypass -File .\\scripts\\dev.ps1 stop",
     "test": "jest --runInBand",
     "lint": "eslint . --ext .js",
     "format": "prettier --write .",
