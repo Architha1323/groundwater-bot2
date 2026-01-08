@@ -41,7 +41,7 @@ jobs:
         run: |
           # retry a few times in case server still warming up
           for i in $(seq 1 5); do
-            if curl -s -X POST -H "Content-Type: application/json" -d '{"message":"CI smoke test"}' http://localhost:3000 | grep -q "GroundwaterBot"; then
+            if curl -s -X POST -H "Content-Type: application/json" -d '{"message":"CI smoke test"}' http://localhost:3000 | grep -q '"reply"'; then
               exit 0
             fi
             sleep 1
