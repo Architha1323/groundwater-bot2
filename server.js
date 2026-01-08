@@ -13,8 +13,6 @@ const rateMap = new Map();
 const RATE_LIMIT_MAX = 10; // requests
 const RATE_LIMIT_WINDOW = 10 * 1000; // ms
 
-
-
 // Health endpoint
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
@@ -62,7 +60,8 @@ app.post('/api/message', async (req, res) => {
     }
 
     const { message } = req.body;
-    if (!message || typeof message !== 'string') return res.status(400).json({ error: 'No message provided' });
+    if (!message || typeof message !== 'string')
+      return res.status(400).json({ error: 'No message provided' });
     if (message.length > 1000) return res.status(400).json({ error: 'Message too long' });
 
     const sanitized = message.replace(/\s+/g, ' ').trim();

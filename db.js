@@ -6,7 +6,11 @@ let db;
 function init(dbFile) {
   const file = dbFile || process.env.DB_FILE || path.join(__dirname, 'chat.db');
   if (db) {
-    try { db.close(); } catch (e) { /* ignore */ }
+    try {
+      db.close();
+    } catch (e) {
+      /* ignore */
+    }
   }
   db = new Database(file);
   db.prepare(
@@ -27,7 +31,9 @@ function saveMessage(role, text) {
 }
 
 function getHistory(limit = 100) {
-  const stmt = db.prepare('SELECT id, role, text, created_at FROM messages ORDER BY id DESC LIMIT ?');
+  const stmt = db.prepare(
+    'SELECT id, role, text, created_at FROM messages ORDER BY id DESC LIMIT ?'
+  );
   return stmt.all(limit).reverse();
 }
 
